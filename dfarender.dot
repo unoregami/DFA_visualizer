@@ -1,0 +1,28 @@
+strict digraph DFA2 {
+	node [fillcolor=white shape=circle style=filled]
+	layout=circo rankdir=LR
+	"-" -> q1 [label="a,b"]
+	"-" [label="-" fillcolor=green]
+	q1 -> q2 [label="a,b"]
+	q2 -> q3 [label="a,b"]
+	q3 -> q4 [label=a]
+	q3 -> q5 [label=b]
+	q4 -> q6 [label=a]
+	q4 -> q5 [label=b]
+	q5 -> q4 [label=a]
+	q5 -> q6 [label=b]
+	q6 -> q6 [label="a,b"]
+	q6 [label=q6 shape=doublecircle]
+	"-" [label="-" fillcolor=white]
+	"-" [label="-" fillcolor="#0000ffa4"]
+	"-" [label="-" fillcolor=white]
+	q1 [label=q1 fillcolor="#0000ffa4"]
+	q1 [label=q1 fillcolor=white]
+	q2 [label=q2 fillcolor="#0000ffa4"]
+	q2 [label=q2 fillcolor=white]
+	q3 [label=q3 fillcolor="#0000ffa4"]
+	q3 [label=q3 fillcolor=white]
+	q5 [label=q5 fillcolor="#0000ffa4"]
+	q5 [label=q5 fillcolor=red]
+	bgcolor="#f8a1a1"
+}

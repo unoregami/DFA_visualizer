@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Automata Compiler</title>
+  <style>
+    :root {
+      --bg-main: #f7fafc;
+      --bg-panel: #ffffff;
+      --bg-input: #f1f5f9;
+      --bg-navbar: #e3e9f4;
+      --bg-footer: #e3e9f4;
+      --accent: #2563eb;
+      --accent2: #006b47;
+      --accent3: #f59e42;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --radius: 12px;
+      --shadow: 0 2px 16px rgba(30,38,59,0.08);
+      --font-main: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Mono', 'Consolas', monospace;
+    }
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-main);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .main-footer {
+      position: fixed;
+      left: 0;
+      width: 100%;
+      background: var(--bg-footer);
+      z-index: 1000;
+      box-shadow: var(--shadow);
+      text-align: right;
+      padding: 0.7rem 4rem 0.7rem 0;
+      bottom: 0;
+      border-top: 1px solid var(--border);
+    }
+    .main-footer h6 {
+      color: var(--accent2);
+      font-size: 1rem;
+      font-weight: 400;
+      margin: 0;
+      letter-spacing: 1px;
+      font-family: var(--font-main);
+      display: inline-block;
+      padding-right: 2rem;
+    }
+    .navbar {
+      background: var(--bg-navbar);
+      color: var(--accent);
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 100;
+    }
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .navbar .nav-links span {
+      margin: 0 3.2rem 0 3.5rem;
+      cursor: pointer;
+      color: var(--accent2);
+      transition: color 0.2s;
+      font-family: var(--font-main);
+      font-weight: 500;
+    }
+    .navbar .nav-links span:first-child {
+      margin-right: 3.5rem;
+    }
+    .navbar .nav-links span:hover {
+      color: var(--accent3);
+      text-decoration: underline;
+    }
+    .navbar select {
+      margin-right: 3rem;
+      background: #e3e9f4;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.8rem;
+      font-family: var(--font-main);
+      font-size: 1rem;
+      outline: none;
+    }
+    .input-container {
+      background: var(--bg-panel);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: center;
+      padding: 1.5rem 0.5rem 1rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-top: 4.2rem;
+    }
+    .input-box form {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+      max-width: 600px;
+    }
+    .input-box input[type="text"] {
+      flex: 1;
+      background: var(--bg-input);
+      color: var(--text-main);
+      border: 1.5px solid var(--accent2);
+      border-radius: var(--radius);
+      padding: 0.8rem 1rem;
+      font-size: 1.1rem;
+      font-family: var(--font-mono);
+      outline: none;
+      transition: border 0.2s;
+    }
+    .input-box input[type="text"]:focus {
+      border-color: var(--accent);
+      background: #fff;
+    }
+    .input-box input[type="hidden"] {
+      display: none;
+    }
+    .main-layout {
+      display: flex;
+      gap: 1.5rem;
+      margin: 2rem 2.5vw;
+      min-height: 600px;
+      margin-bottom: 4.5rem;
+    }
+    .left-panel, .middle-panel, .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .left-panel { flex: 0.9; }
+    .middle-panel { flex: 2; }
+    .right-panel { flex: 1.1; }
+    .panel-box {
+      background: var(--bg-panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 1.2rem 1.1rem;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .panel-title {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: var(--accent2);
+      font-size: 1.08rem;
+      letter-spacing: 0.5px;
+      font-family: var(--font-main);
+    }
+    .dfa-display {
+      height: 530px;
+      background: #f1f5f9;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--accent2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-style: italic;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    #dfaInputStringDisplay {
+      padding: 0.5rem 0;
+      font-size: 1.1rem;
+      color: var(--accent2);
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    #dfaStepLabel {
+      position: absolute;
+      bottom: 1.2rem;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 1.1rem;
+      color: var(--accent3);
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+    }
+    .view-switcher {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .view-switcher button {
+      padding: 0.45rem 1.1rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--accent2);
+      color: #fff;
+      font-family: var(--font-main);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+    .view-switcher button.active,
+    .view-switcher button:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+    .output-box {
+      background: #f1f5f9;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      padding: 0.7rem 1rem;
+      min-height: 120px;
+      color: var(--text-main);
+      font-size: 1rem;
+      font-family: var(--font-mono);
+      overflow-x: auto;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      word-break: break-all;
+    }
+    .regex-selector label {
+      display: block;
+      margin-bottom: 0.7rem;
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: color 0.2s;
+      padding-left: 1.8rem;
+      position: relative;
+      font-family: var(--font-main);
+    }
+    .regex-selector input[type="radio"] {
+      accent-color: var(--accent2);
+      margin-right: 0.7rem;
+      position: absolute;
+      left: 0;
+      top: 3px;
+    }
+    .regex-selector label:hover {
+      color: var(--accent3);
+    }
+    .regex-selector span {
+        display: inline-block;
+        vertical-align: top;
+    }
+    @media (max-width: 1100px) {
+      .main-layout {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .left-panel, .middle-panel, .right-panel {
+        flex: unset;
+      }
+    }
+    @media (max-width: 700px) {
+      .navbar, .main-footer {
+        padding: 0.7rem 1rem;
+      }
+      .main-layout {
+        margin: 1rem 0.5rem 2rem 0.5rem;
+      }
+      .dfa-display,
+      .big-pda-panel {
+        height: 300px;
+        min-height: 300px;
+      }
+    }
+    .big-pda-panel {
+      height: 650px;
+      max-width: 650px;
+      max-height: 800px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f1f5f9;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--accent2);
+      box-shadow: var(--shadow);
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+<footer class="main-footer">
+  <h6>Automata Project | 2025</h6>
+</footer>
+
+<div class="navbar">
+  <div style="font-size:1.5rem;font-weight:700;font-family:var(--font-main);color:var(--accent2);letter-spacing:1px;flex:1;text-align:left;">
+    Automata Compiler
+  </div>
+  <div class="nav-links">
+    <select id="viewerDropdown" style="margin-left:1.5rem;">
+      <option value="dfa">DFA Viewer</option>
+      <option value="pda">CFG & PDA Viewer</option>
+    </select>
+  </div>
+</div>
+
+<div class="input-container">
+  <div class="input-box">
+    <form method="POST" onsubmit="return false;">
+      <input type="text" name="dfa_input" id="stringInput" placeholder="Type input string(s) separated by space..." required autocomplete="off">
+      <input type="hidden" name="regex_id" id="regexId" value="1">
+    </form>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="left-panel" style="font-size: 1.18em;">
+    <div class="panel-box">
+      <div class="panel-title">Select a Regex</div>
+      <div class="regex-selector">
+        <label>
+          <input type="radio" name="regex" checked onclick="setRegex(1)">
+          <span>Regex 1:</span>
+          <span style="color: var(--accent2); font-size:0.93em;">(11+00)(11+00)*(1+0)(11+00+10+01)((101+111)+(00+11)1*011*00(0+1)*((11+00))+(111+000))</span>
+        </label>
+        <label>
+          <input type="radio" name="regex" onclick="setRegex(2)">
+          <span>Regex 2:</span>
+          <span style="color: var(--accent2); font-size:0.93em;">(aa+ab+ba+bb)(a+b)*(aa*+bb*)((ba)*+(ab)*+(aa)+(bb))(aa+bb)(a+b)*</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="panel-box" id="pdaViewerPanel">
+      <div class="panel-title">CFG | PDA Viewer</div>
+      <div class="view-switcher">
+        <button onclick="changeView('cfg')" id="btnCFG">CFG</button>
+        <button onclick="changeView('pda')" id="btnPDA">PDA</button>
+      </div>
+      <div class="output-box" id="viewContent">Select a view to display.</div>
+    </div>
+  </div>
+
+  <div class="middle-panel" id="dfaPanel">
+    <div class="panel-box dfa-display" id="dfaGraph">
+      <div id="dfaInputStringDisplay">Input will appear here</div>
+      <object id="dfaImg" type="image/svg+xml" data="/static/dfa_1.svg?{{ (range(100000)|random) }}" style="max-width: 100%; max-height: 100%; flex-grow: 1;"></object>
+      <div id="dfaStepLabel"></div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="panel-box">
+      <div class="panel-title">Output</div>
+      <div class="output-box" id="outputResult">
+        {% if result %}
+          {{ result }}
+        {% else %}
+          <span style="color: var(--text-muted);">Waiting for input...</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="panel-box">
+      <div class="panel-title">Input History (Current String)</div>
+      <div class="output-box" id="inputStrings">
+        No inputs yet.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let selectedRegex = 1;
+
+  function setRegex(id) {
+    document.getElementById('regexId').value = id;
+    selectedRegex = id;
+    const dfaImg = document.getElementById('dfaImg');
+    const cacheBuster = new Date().getTime();
+    if (selectedRegex === 1) {
+      dfaImg.data = `/static/dfa_1.svg?${cacheBuster}`;
+    } else {
+      dfaImg.data = `/static/dfa_2.svg?${cacheBuster}`;
+    }
+    document.getElementById('dfaStepLabel').innerHTML = '';
+    document.getElementById('dfaInputStringDisplay').innerHTML = 'Input will appear here';
+    document.getElementById("outputResult").innerHTML = '<span style="color: var(--text-muted);">Waiting for input...</span>';
+    document.getElementById("inputStrings").innerHTML = 'No inputs yet.';
+  }
+
+  var cfg_img = document.createElement("img");
+  cfg_img.style.maxWidth = '100%'; cfg_img.style.maxHeight = '100%';
+  var pda_img = document.createElement("img");
+  pda_img.style.maxWidth = '100%'; pda_img.style.maxHeight = '100%';
+
+  function changeView(viewType) {
+    const viewContent = document.getElementById("viewContent");
+    viewContent.innerHTML = '';
+
+    if (selectedRegex === 2) {
+      cfg_img.src = "/static/img/CFG_2.jpg";
+      pda_img.src = "/static/img/PDA_2.jpg";
+    } else {
+      cfg_img.src = "/static/img/CFG_1.jpg";
+      pda_img.src = "/static/img/PDA_1.jpg";
+    }
+
+    if (viewType === 'pda') {
+      viewContent.appendChild(pda_img);
+    } else if (viewType === 'cfg') {
+      viewContent.appendChild(cfg_img);
+    } else {
+      viewContent.innerHTML = `Selected view: ${viewType} (Content not available)`;
+    }
+  }
+
+  document.getElementById('stringInput').addEventListener('keydown', async function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const fullInputText = document.getElementById("stringInput").value;
+      const individualInputs = fullInputText.trim().split(/\s+/).filter(s => s.length > 0);
+
+      if (individualInputs.length === 0) {
+          if (fullInputText.trim() === "") { // User entered only whitespace or nothing
+            if (!confirm("Process empty string?")) return;
+            individualInputs.push(""); // Add a single empty string to process
+          } else { // Should not happen if filter(s => s.length > 0) works, but as a fallback
+            document.getElementById("outputResult").innerHTML = '<span style="color: var(--text-muted);">No valid strings to process.</span>';
+            return;
+          }
+      }
+      
+      document.getElementById("outputResult").innerHTML = ''; // Clear previous combined results
+      let cumulativeResultsHTML = '';
+
+      for (const singleInput of individualInputs) {
+        document.getElementById('dfaInputStringDisplay').innerHTML = `Processing: <b>${singleInput === "" ? '"" (empty string)' : singleInput}</b>`;
+        document.getElementById('dfaStepLabel').innerHTML = 'Fetching DFA states...';
+        document.getElementById("inputStrings").innerHTML = 'Waiting for animation...'; // Clear history for current string
+
+        try {
+          const response = await fetch('/process_input', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ input: singleInput, regex_id: selectedRegex })
+          });
+
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({ error: `Server error: ${response.statusText}` }));
+            throw new Error(errData.error || `Server error: ${response.statusText}`);
+          }
+
+          const data = await response.json();
+
+          if (data.error) {
+            cumulativeResultsHTML += `<p>"<b>${singleInput}</b>": <span style="color:red;">Error: ${data.error}</span></p>`;
+            document.getElementById("dfaGraph").innerHTML = `<p style="color:red;">Error generating DFA for "${singleInput}": ${data.details || data.error}</p>`;
+            continue; 
+          }
+          
+          cumulativeResultsHTML += `<p>"<b>${singleInput === "" ? '""' : singleInput}</b>": ${data.result}</p>`;
+          document.getElementById("outputResult").innerHTML = cumulativeResultsHTML;
+
+          await animateDFA(data.num_steps, singleInput, data.result);
+
+          if (individualInputs.indexOf(singleInput) < individualInputs.length - 1) {
+            document.getElementById('dfaStepLabel').innerHTML = "Preparing for next string...";
+            await new Promise(resolve => setTimeout(resolve, 1500)); 
+          }
+
+        } catch (error) {
+          console.error(`Error processing input "${singleInput}":`, error);
+          cumulativeResultsHTML += `<p>Input "<b>${singleInput}</b>": <span style="color:red;">Client/Network Error: ${error.message}</span></p>`;
+          document.getElementById("outputResult").innerHTML = cumulativeResultsHTML;
+          document.getElementById('dfaStepLabel').innerHTML = `Error processing "${singleInput}"`;
+        }
+      }
+      if (individualInputs.length > 0) {
+        document.getElementById('dfaStepLabel').innerHTML = "All inputs processed.";
+      }
+      // document.getElementById('stringInput').value = ''; // Optionally clear input field
+    }
+  });
+
+  document.getElementById('viewerDropdown').addEventListener('change', function(e) {
+    const dfaPanel = document.getElementById('dfaPanel');
+    const pdaViewerPanel = document.getElementById('pdaViewerPanel');
+    const rightPanel = document.querySelector('.right-panel');
+
+    if (e.target.value === 'dfa') {
+      dfaPanel.style.display = '';
+      pdaViewerPanel.style.display = 'none';
+      rightPanel.style.display = '';
+    } else {
+      dfaPanel.style.display = 'none';
+      pdaViewerPanel.style.display = '';
+      rightPanel.style.display = 'none';
+      if (!document.getElementById('viewContent').hasChildNodes()) {
+        changeView('pda');
+        const pdaButton = document.getElementById('btnPDA');
+        if (pdaButton) pdaButton.classList.add('active');
+        const cfgButton = document.getElementById('btnCFG');
+        if (cfgButton) cfgButton.classList.remove('active');
+      }
+    }
+  });
+
+  document.getElementById('dfaPanel').style.display = '';
+  document.getElementById('pdaViewerPanel').style.display = 'none';
+  document.querySelector('.right-panel').style.display = '';
+
+  function animateDFA(numStepsFromPython, inputStr, finalResult) {
+    return new Promise((resolve) => {
+        let currentProcessingStep = 0;
+        const dfaImg = document.getElementById('dfaImg');
+        const dfaStepLabel = document.getElementById('dfaStepLabel');
+        const inputStringsDiv = document.getElementById('inputStrings');
+        const dfaInputDisplay = document.getElementById('dfaInputStringDisplay');
+
+        dfaInputDisplay.innerHTML = `Input: <b>${inputStr === "" ? '"" (empty string)' : inputStr}</b>`;
+
+        function showNextStateVisual() {
+          dfaImg.data = `/static/dfa_step${currentProcessingStep}.svg?` + new Date().getTime();
+
+          if (inputStr.length === 0 && currentProcessingStep === 0) {
+            dfaStepLabel.innerHTML = `Processing empty string...`;
+          } else if (currentProcessingStep < inputStr.length) {
+            dfaStepLabel.innerHTML = `Step ${currentProcessingStep + 1}: Reading '<b>${inputStr[currentProcessingStep]}</b>'`;
+          } else {
+            dfaStepLabel.innerHTML = `End of input. Final state.`;
+          }
+
+          let historyHtml = '';
+          if (inputStr.length === 0 && currentProcessingStep === 0) {
+              historyHtml = `Input: "" (empty string)<br>Initial state.`;
+          } else if (currentProcessingStep === 0) {
+              historyHtml = 'Initial state.<br>';
+          } else {
+              for (let i = 0; i < currentProcessingStep; i++) {
+                  if (i < inputStr.length) {
+                      historyHtml += `<b>${inputStr[i]}</b><br>`;
+                  }
+              }
+          }
+          
+          if (currentProcessingStep === numStepsFromPython) {
+            historyHtml += `<br><span style="color:var(--accent2);font-weight:600;">Result: ${finalResult}</span>`;
+          }
+          inputStringsDiv.innerHTML = historyHtml || 'Processing...';
+
+          currentProcessingStep++;
+
+          if (currentProcessingStep <= numStepsFromPython) {
+            setTimeout(showNextStateVisual, 1000);
+          } else {
+            setTimeout(() => {
+              dfaStepLabel.innerHTML = `Finished. Final Result: <b>${finalResult}</b>`;
+              resolve();
+            }, 1300);
+          }
+        }
+        showNextStateVisual();
+    });
+  }
+</script>
+
+</body>
+</html>

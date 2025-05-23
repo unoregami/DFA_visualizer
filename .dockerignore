@@ -1,0 +1,15 @@
+Dockerfile
+.dockerignore
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+# Add any other local files/folders you don't want in your Docker image
+# e.g., your local dfarender Word/HTML files if they are still there
+dfarender.docx
+dfarender.html
+# etc.
