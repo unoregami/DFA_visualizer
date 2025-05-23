@@ -82,10 +82,7 @@ def visualize(node_way, dot_template, es_nodes, output_dir='static'):
           # print(f"Warning: Could not mark end state {end_node}, may not exist in graph.")
           pass
 
-
   bN = None # Before Node for un-highlighting
-
-
 
   for step_index, current_node_in_path in enumerate(node_way):
     # Create a fresh copy of the dot_template for each step to avoid cumulative styling
@@ -207,7 +204,7 @@ def run_dfa(dfa_choice, user_input):
         # Corrected transitions for q1 and q2 to be lists if they respond to 'a' and 'b'
         # If 'q1':'q2' means q1 on 'a' -> q2 AND q1 on 'b' -> q2, then:
         dfa = {
-            '-': 'q1', 'q1': ['q2','q2'], 'q2': ['q3','q3'], 'q3': ['q4', 'q5'],
+            '-': 'q1', 'q1': 'q2', 'q2': 'q3', 'q3': ['q4', 'q5'],
             'q4': ['q6', 'q5'], 'q5': ['q4', 'q6'], 'q6': ['q6', 'q6']
         }
         es = 'q6' # This should be a list: es = ['q6'] for consistency
