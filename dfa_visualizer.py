@@ -170,7 +170,7 @@ def run_dfa(dfa_choice, user_input):
             'q4': ['q6','q20'], 'q5': ['q34','q6'], 'q6': 'q7', 'q7': ['q9','q8'],
             'q8': ['q10','q11'], 'q9': ['q11','T2'], 'q10': ['T2','q11'],
             'q11': ['q12','q11'], 'q12': ['T3','q13'], 'q13': ['q14','q13'],
-            'q14': ['q15','T4'], 'q15': ['q17','q16'], 'q16': ['q17','q18'],
+            'q14': ['q15','T3'], 'q15': ['q17','q16'], 'q16': ['q17','q18'],
             'q17': ['q19','q16'], 'q18': ['q17','q18'], 'q19': ['q19','q16'],
             'q20': ['q22','q21'], 'q21': ['q24','q23'], 'q22': ['q25','q23'],
             'q23': ['q27','q26'], 'q24': ['q26','q7'], 'q25': ['q26','q35'],
@@ -183,10 +183,10 @@ def run_dfa(dfa_choice, user_input):
             'q44': ['q46','q35'], 'q45': ['q50','q51'], 'q46': ['q48','q47'],
             'q47': ['q49','q47'], 'q48': ['q48','q43'], 'q49': ['q52','q43'],
             'q50': ['q9','q42'], 'q51': ['q52','q51'], 'q52': ['q11','q43'],
-            'q53': ['T5','q43'], 'q54': ['q15','q43'],
+            'q53': ['T4','q43'], 'q54': ['q15','q43'],
             # Explicitly define Trap states if they should appear in the diagram
             'T': ['T','T'], 'T1':['T1','T1'], 'T2':['T2','T2'], 'T3':['T3','T3'],
-            'T5':['T5','T5'] # Is T5 an accept or trap? If accept, add to es.
+            'T4':['T4','T4'] # Is T5 an accept or trap? If accept, add to es.
         }
         es = ['q19','q18'] # Assuming T5 is an accept state for DFA1. Adjust if not.
         alphabet_symbols = ['0', '1']
